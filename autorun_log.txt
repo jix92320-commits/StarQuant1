@@ -1,0 +1,44 @@
+08:03:56 === StarQuant 自动检测启动器 ===
+08:04:00 ✅ 模块 data_fetcher 导入正常
+08:04:00 ✅ 模块 ai_predict_engine 导入正常
+08:04:00 ✅ 模块 policy_fusion_v24 导入正常
+08:04:00 ✅ 模块 ai_stock_query 导入正常
+08:04:00 ✅ 模块 ai_emotion_copy 导入正常
+08:04:01 ✅ 模块 web_server 导入正常
+08:04:01 ✅ 模块 voice_output 导入正常
+08:05:06 ✅ 行情数据正常：10 条
+08:05:06 ✅ 数据源检测通过
+08:05:06 🚀 启动 StarQuant 主程序 ...
+08:05:06 💥 主程序异常：
+Traceback (most recent call last):
+  File "C:\StarQuant\starquant_autorun_ai.py", line 50, in run_main
+    threading.Thread(target=main_starquant.main_loop, daemon=True).start()
+                            ^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'main_starquant' has no attribute 'main_loop'
+
+08:06:33 === StarQuant 一键全功能启动器 ===
+08:06:33 ✅ 模块 data_fetcher 导入正常
+08:06:33 ✅ 模块 ai_predict_engine 导入正常
+08:06:33 ✅ 模块 policy_fusion_v24 导入正常
+08:06:33 ✅ 模块 ai_stock_query 导入正常
+08:06:33 ✅ 模块 ai_emotion_copy 导入正常
+08:06:33 ✅ 模块 web_server 导入正常
+08:06:34 ✅ 模块 voice_output 导入正常
+08:07:26 ✅ 行情数据正常：10 条
+08:07:26 ✅ 数据源检测通过
+08:07:26 ⚠️ 检测到缺失 main_loop()，自动补全中...
+08:07:26 ✅ 已自动修复 main_loop()
+08:07:26 🚀 启动 StarQuant 主程序 ...
+08:07:26 💥 循环异常：module 'main_starquant' has no attribute 'tick_once'
+08:07:26 ⚠️ Flask 启动异常：module 'main_starquant' has no attribute 'run_flask_server'
+08:07:32 ✅ 系统已启动，监控中...
+08:07:36 💥 循环异常：module 'main_starquant' has no attribute 'tick_once'
+08:07:46 💥 循环异常：module 'main_starquant' has no attribute 'tick_once'
+08:07:56 💥 循环异常：module 'main_starquant' has no attribute 'tick_once'
+08:08:02 🔍 周期检测：系统运行中...
+08:08:06 💥 循环异常：module 'main_starquant' has no attribute 'tick_once'
+08:08:16 💥 循环异常：module 'main_starquant' has no attribute 'tick_once'
+08:08:26 💥 循环异常：module 'main_starquant' has no attribute 'tick_once'
+08:08:32 🔍 周期检测：系统运行中...
+08:08:36 💥 循环异常：module 'main_starquant' has no attribute 'tick_once'
+08:08:46 💥 循环异常：module 'main_starquant' has no attribute 'tick_once'

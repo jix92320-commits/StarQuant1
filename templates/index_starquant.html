@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <title>StarQuant v5.3 FinalPro</title>
+  <link rel="stylesheet" href="/static/style.css"/>
+  <script defer src="/static/script_starquant.js"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="title">🌌 StarQuant v5.3 FinalPro</div>
+    <div class="meta">状态：<span id="mstatus">--</span> ｜ 更新时间：<span id="mtime">--</span></div>
+  </header>
+
+  <main id="grid">
+    <section class="card">
+      <h2>🔍 搜索 / 自选</h2>
+      <div class="row">
+        <input id="q" placeholder="输入股票名/代码" />
+        <button onclick="doSearch()">搜索</button>
+        <button onclick="addWatch()">添加自选</button>
+        <button onclick="delWatch()">删除自选</button>
+      </div>
+      <h3>搜索结果</h3>
+      <div id="search"></div>
+      <h3>我的自选</h3>
+      <div id="watchlist"></div>
+    </section>
+
+    <section class="card">
+      <h2>🚀 打板推荐 (Top)</h2>
+      <table id="board" class="table"></table>
+    </section>
+
+    <section class="card">
+      <h2>🤖 AI预测</h2>
+      <table id="pred" class="table"></table>
+    </section>
+
+    <section class="card">
+      <h2>✍️ AI文案 / 学习状态</h2>
+      <pre id="copy" class="copy"></pre>
+      <div>准确率：<span id="acc">--</span></div>
+    </section>
+
+    <section class="card">
+      <h2>📰 政策与新闻</h2>
+      <ul id="news" class="news"></ul>
+    </section>
+  </main>
+</body>
+</html>

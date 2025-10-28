@@ -1,0 +1,25 @@
+# venv / python cache
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# logs / outputs
+*.log
+*.tmp
+*.cache
+*.bak
+_backup/
+
+# IDE
+.vscode/
+.idea/
+
+# audio / media samples
+*.mp3
+*.wav
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,23 @@
+:root {
+  --bg: #0b0f17;
+  --card: #111827;
+  --fg: #d0d4dc;
+  --sub: #93c5fd;
+  --accent: #50fa7b;
+}
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+  margin: 0;
+}
+.card {
+  background: var(--card);
+  padding: 16px;
+  border-radius: 14px;
+  box-shadow: 0 0 12px rgba(80, 250, 123, .12);
+}
+h2 {
+  color: var(--accent);
+  margin: 0 0 10px 0;
+}
