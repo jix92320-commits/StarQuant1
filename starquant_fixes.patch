@@ -1,0 +1,82 @@
+*** Begin Patch
+*** Update File: ai_predict_engine.py
+@@
+-AI_MEM_PATH = "C:\\StarQuant\\ai_memory.json"
++# Use a relative path for the AI memory file instead of a fixed C:\ path.
++# This ensures the memory file lives alongside the code and works on any OS.
++import os
++AI_MEM_PATH = os.path.join(os.path.dirname(__file__), "ai_memory.json")
+@@ def run_ai_predict(market_data: List[Dict], news_data: List[Dict], ai_mem=None) -> List[Dict]:
+-            results.append({
+-                "code": row.get("code"), "name": row.get("name"),
+-                "price": price, "T1": T1, "T3": T3,
+-                "expect": expect, "confidence": conf, "signal": signal
+-            })
++            # Include both uppercase and lowercase keys for T1/T3 so the frontend can
++            # reliably access them (it tries x.t1 || x.T1). Keep the original
++            # uppercase keys for backward compatibility.
++            results.append({
++                "code": row.get("code"),
++                "name": row.get("name"),
++                "price": price,
++                "T1": T1,
++                "T3": T3,
++                "t1": T1,
++                "t3": T3,
++                "expect": expect,
++                "confidence": conf,
++                "signal": signal,
++            })
+*** End Patch
+*** Update File: web_server.py
+@@
+-@app.route("/api/search")
+-def api_search():
+-    q = (request.args.get("q", "") or "").strip()
+-    if not q:
+-        return jsonify({"results": []})
+-
+-    kw = q.lower()
+-    data = get_realtime_data(limit=3000)  # 放大样本避免截断
+-    results = []
+-    for d in data:
+-        name = str(d.get("name", "")).lower()
+-        code = str(d.get("code", "")).lower()
+-        if kw in name or kw in code:
+-            results.append({
+-                "code": d.get("code"),
+-                "name": d.get("name"),
+-                "price": d.get("price"),
+-                "pct": d.get("pct"),
+-            })
+-    return jsonify({"results": results[:20]})
++@app.route("/api/search")
++def api_search():
++    """
++    Search the current market data for a given keyword.  This uses the
++    already-cached `GLOBAL_STATE["market_data"]` when available to avoid an
++    expensive realtime fetch on each search.  Falling back to a fresh fetch
++    ensures the search still works even if the global state has not been
++    populated yet.  Returns at most 20 results.
++    """
++    q = (request.args.get("q", "") or "").strip()
++    if not q:
++        return jsonify({"results": []})
++
++    kw = q.lower()
++    # Prefer the existing market data from GLOBAL_STATE when available.
++    data = GLOBAL_STATE.get("market_data") or get_realtime_data(limit=3000)
++
++    results = []
++    for d in data:
++        name = str(d.get("name", "")).lower()
++        code = str(d.get("code", "")).lower()
++        if kw in name or kw in code:
++            results.append({
++                "code": d.get("code"),
++                "name": d.get("name"),
++                "price": d.get("price"),
++                "pct": d.get("pct"),
++            })
++    return jsonify({"results": results[:20]})
+*** End Patch

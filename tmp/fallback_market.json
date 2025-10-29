@@ -1,0 +1,62 @@
+[
+  {
+    "code": "TEST0",
+    "name": "样本0",
+    "price": 10,
+    "pct": 0
+  },
+  {
+    "code": "TEST1",
+    "name": "样本1",
+    "price": 11,
+    "pct": 1
+  },
+  {
+    "code": "TEST2",
+    "name": "样本2",
+    "price": 12,
+    "pct": 2
+  },
+  {
+    "code": "TEST3",
+    "name": "样本3",
+    "price": 13,
+    "pct": 3
+  },
+  {
+    "code": "TEST4",
+    "name": "样本4",
+    "price": 14,
+    "pct": 4
+  },
+  {
+    "code": "TEST5",
+    "name": "样本5",
+    "price": 15,
+    "pct": 5
+  },
+  {
+    "code": "TEST6",
+    "name": "样本6",
+    "price": 16,
+    "pct": 6
+  },
+  {
+    "code": "TEST7",
+    "name": "样本7",
+    "price": 17,
+    "pct": 7
+  },
+  {
+    "code": "TEST8",
+    "name": "样本8",
+    "price": 18,
+    "pct": 8
+  },
+  {
+    "code": "TEST9",
+    "name": "样本9",
+    "price": 19,
+    "pct": 9
+  }
+]
