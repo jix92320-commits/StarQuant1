@@ -1,0 +1,157 @@
+*** Begin Patch
+*** Update File: data_fetcher.py
+@@
+-def get_realtime_data(limit=300):
+-    """获取真实A股行情，自动过滤 ST / BJ / 退市"""
+-    try:
+-        df = ak.stock_zh_a_spot_em()
+-        df = df.convert_dtypes()
+-        df = df.rename(columns={
+-            "代码": "code", "名称": "name", "最新价": "price",
+-            "涨跌幅": "pct", "成交量": "volume", "成交额": "amount"
+-        })
+-        df = df[~df["name"].str.contains("ST|退|BJ", na=False)]
+-        df = df[df["price"].astype(float) > 0]
+-        df["pct"] = pd.to_numeric(df["pct"], errors="coerce")
+-        data = df.head(limit).to_dict("records")
+-
+-        for row in data:
+-            for k, v in list(row.items()):
+-                if isinstance(v, str):
+-                    row[k] = v.encode("utf-8", "ignore").decode("utf-8")
+-        return data
+-    except Exception as e:
+-        print("❌ 行情错误：", e)
+-        return []
++def get_realtime_data(limit=300):
++    """
++    获取真实A股行情，自动过滤 ST / BJ / 退市。
++    当 akshare 数据源不可用或抛出异常时，自动回退到本地缓存文件 fallback_market.json。
++    """
++    try:
++        df = ak.stock_zh_a_spot_em()
++        df = df.convert_dtypes()
++        df = df.rename(columns={
++            "代码": "code", "名称": "name", "最新价": "price",
++            "涨跌幅": "pct", "成交量": "volume", "成交额": "amount"
++        })
++        df = df[~df["name"].str.contains("ST|退|BJ", na=False)]
++        df = df[df["price"].astype(float) > 0]
++        df["pct"] = pd.to_numeric(df["pct"], errors="coerce")
++        data = df.head(limit).to_dict("records")
++
++        # 清理字符串编码
++        for row in data:
++            for k, v in list(row.items()):
++                if isinstance(v, str):
++                    row[k] = v.encode("utf-8", "ignore").decode("utf-8")
++        return data
++    except Exception as e:
++        print("❌ 行情错误：", e)
++        # 当主数据源失败时，尝试读取本地 fallback_market.json
++        try:
++            import json, os
++            fallback_path = os.path.join(os.path.dirname(__file__), "fallback_market.json")
++            if os.path.exists(fallback_path):
++                with open(fallback_path, "r", encoding="utf-8") as f:
++                    fallback_data = json.load(f)
++                    return fallback_data[:limit]
++        except Exception as e2:
++            print("⚠️ 使用本地缓存失败：", e2)
++        # 最终回退为空列表
++        return []
+*** End Patch
+*** Update File: web_server.py
+@@
+ @app.route("/api/search")
+ def api_search():
+@@
+-    kw = q.lower()
+-    data = get_realtime_data(limit=3000)  # 放大样本避免截断
+-    results = []
+-    for d in data:
+-        name = str(d.get("name", "")).lower()
+-        code = str(d.get("code", "")).lower()
+-        if kw in name or kw in code:
+-            results.append({
+-                "code": d.get("code"),
+-                "name": d.get("name"),
+-                "price": d.get("price"),
+-                "pct": d.get("pct"),
+-            })
+-    return jsonify({"results": results[:20]})
++    kw = q.lower()
++    # 优先使用已缓存的行情数据，避免每次都远程抓取
++    s = get_global_state()
++    data = s.get("market_data", []) or get_realtime_data(limit=3000)
++    results = []
++    for d in data:
++        try:
++            name = str(d.get("name", "")).lower()
++            code = str(d.get("code", "")).lower()
++            if kw in name or kw in code:
++                results.append({
++                    "code": d.get("code"),
++                    "name": d.get("name"),
++                    "price": d.get("price"),
++                    "pct": d.get("pct"),
++                })
++        except Exception:
++            continue
++    return jsonify({"results": results[:20]})
+*** End Patch
+*** Update File: ai_predict_engine.py
+@@
+-import random, json, os, statistics, requests
++import random, json, statistics, requests, os
+@@
+-AI_MEM_PATH = "C:\\StarQuant\\ai_memory.json"
++AI_MEM_PATH = os.path.join(os.path.dirname(__file__), "ai_memory.json")
+@@ def run_ai_predict(market_data: List[Dict], news_data: List[Dict], ai_mem=None) -> List[Dict]:
+-            results.append({
+-                "code": row.get("code"), "name": row.get("name"),
+-                "price": price, "T1": T1, "T3": T3,
+-                "expect": expect, "confidence": conf, "signal": signal
+-            })
++            results.append({
++                "code": row.get("code"),
++                "name": row.get("name"),
++                "price": price,
++                "T1": T1,
++                "T3": T3,
++                "t1": T1,  # 兼容前端小写字段
++                "t3": T3,
++                "expect": expect,
++                "confidence": conf,
++                "signal": signal,
++            })
+*** End Patch
+*** Update File: voice_output.py
+@@
+-def speak_text(text: str):
+-    try:
+-        if not text or len(text.strip()) < 5:
+-            return
+-        path = os.path.join(tempfile.gettempdir(), "voice_ai.mp3")
+-        tts = gTTS(text=text, lang='zh-cn')
+-        tts.save(path)
+-        playsound(path)
+-    except Exception as e:
+-        print("⚠️ 语音模块异常：", e)
++def speak_text(text: str):
++    """
++    播报文本为语音。
++    将 MP3 文件保存到项目目录下的 voice_output 文件夹中，避免系统临时目录权限问题。
++    """
++    try:
++        if not text or len(text.strip()) < 5:
++            return
++        output_dir = os.path.join(os.path.dirname(__file__), "voice_output")
++        os.makedirs(output_dir, exist_ok=True)
++        path = os.path.join(output_dir, "voice_ai.mp3")
++        tts = gTTS(text=text, lang='zh-cn')
++        tts.save(path)
++        playsound(path)
++    except Exception as e:
++        print("⚠️ 语音模块异常：", e)
+*** End Patch
