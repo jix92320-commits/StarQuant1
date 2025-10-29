@@ -5,12 +5,11 @@ StarQuant v5.3 FinalPro - 政策/新闻融合模块 v25
 """
 import feedparser, time
 
-NEWS_SOURCES = [
+SOURCES = [
     "https://www.chinanews.com.cn/rss/scroll-news.xml",
-    "https://rsshub.app/cailianpress/index",
-    "https://rsshub.app/xueqiu/today",
     "https://36kr.com/feed",
 ]
+
 
 def _try_fetch(url, limit=30):
     try:

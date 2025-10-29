@@ -2,6 +2,12 @@
 """
 StarQuant v5.3 FinalPro — 语音播报稳定版
 """
+import os
+VOICE_DIR = os.path.join(os.getcwd(), "voice_output")
+os.makedirs(VOICE_DIR, exist_ok=True)
+VOICE_PATH = os.path.join(VOICE_DIR, "voice_ai.mp3")
+# 后面所有写临时mp3的地方，改用 VOICE_PATH
+
 import os, tempfile
 from gtts import gTTS
 from playsound import playsound

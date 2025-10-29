@@ -53,27 +53,27 @@ def api_data():
     return jsonify(payload)
 
 
-# ===== 搜索接口（修复缩进） =====
+# web_server.py 片段
+from data_fetcher import get_realtime_data
+from flask import request, jsonify
+
+GLOBAL_STATE = {"market": []}
+
+@app.route("/api/data")
+def api_data():
+    # 定时刷新时写入内存
+    rows = get_realtime_data(limit=3000)
+    GLOBAL_STATE["market"] = rows
+    return jsonify({"rows": rows})
+
 @app.route("/api/search")
 def api_search():
-    q = (request.args.get("q", "") or "").strip()
-    if not q:
-        return jsonify({"results": []})
+    q = (request.args.get("q") or "").strip()
+    data = GLOBAL_STATE.get("market") or get_realtime_data(limit=3000)
+    if q:
+        data = [r for r in data if q in r.get("name","") or q in r.get("code","")]
+    return jsonify({"rows": data})  # 一定返回 rows
 
-    kw = q.lower()
-    data = get_realtime_data(limit=3000)  # 放大样本避免截断
-    results = []
-    for d in data:
-        name = str(d.get("name", "")).lower()
-        code = str(d.get("code", "")).lower()
-        if kw in name or kw in code:
-            results.append({
-                "code": d.get("code"),
-                "name": d.get("name"),
-                "price": d.get("price"),
-                "pct": d.get("pct"),
-            })
-    return jsonify({"results": results[:20]})
 
 
 # ===== 添加自选股 =====
