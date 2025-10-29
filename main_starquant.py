@@ -14,7 +14,7 @@ StarQuant v5.3 FinalPro
 """
 import time, threading, webbrowser
 from data_fetcher import get_realtime_data, get_time_status, normalize_keys
-from policy_fusion_v25 import get_policy_news
+from policy_fusion_v24 import get_policy_news
 from ai_stock_query import apply_watchlist_actions, get_watchlist_snapshot, get_board_suggestions
 from ai_predict_engine import run_ai_predict, load_ai_memory, save_ai_memory
 from ai_learning import update_learning_state
